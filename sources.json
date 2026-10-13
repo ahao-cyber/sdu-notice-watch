@@ -1,0 +1,245 @@
+{
+ "version": 2,
+ "verified_at": "2026-10-12",
+ "_note": "云端可达性 2026-10-12 用境外探针实测：restricted=true 的两个源会被 VSB 栏目 IP 权限挡到 ipauth.htm（页面原文『您没有访问当前栏目的权限』），任何非校园网环境（含境内云服务器）都抓不到，只能在校内网抓。其余 14 个源云端可直接抓。",
+ "settings": {
+  "window_days": 30,
+  "timeout": 25,
+  "retries": 2,
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+ },
+ "tag_rules": {
+  "A": [
+   "转专业",
+   "选课",
+   "退补选",
+   "重修",
+   "补考",
+   "缓考",
+   "考试安排",
+   "四六级",
+   "全国大学英语",
+   "放假",
+   "调课",
+   "停课",
+   "校历",
+   "学籍",
+   "毕业",
+   "推免",
+   "保研",
+   "评奖",
+   "评优",
+   "奖学金",
+   "助学金",
+   "励志",
+   "家庭经济困难",
+   "名单公示",
+   "认定",
+   "学业预警",
+   "纪律处分",
+   "学位",
+   "培养方案",
+   "分流",
+   "实验班",
+   "菁英班",
+   "选调生"
+  ],
+  "B": [
+   "竞赛",
+   "大赛",
+   "挑战杯",
+   "创新创业",
+   "大创",
+   "报名",
+   "招募",
+   "选拔",
+   "交换",
+   "交流",
+   "暑期学校",
+   "讲座",
+   "报告",
+   "宣讲",
+   "实习",
+   "招聘会",
+   "双选会",
+   "夏令营",
+   "志愿者",
+   "志愿服务",
+   "纳新",
+   "社团"
+  ]
+ },
+ "sources": [
+  {
+   "id": "bkjx_index",
+   "name": "本科生院·首页合并栏",
+   "url": "https://www.bkjx.sdu.edu.cn/",
+   "parser": "bkjx_index",
+   "priority": "A",
+   "restricted": false
+  },
+  {
+   "id": "bkjx_tzgg",
+   "name": "本科生院·通知公告",
+   "url": "https://www.bkjx.sdu.edu.cn/index/tzgg.htm",
+   "parser": "bkjx_list",
+   "priority": "A",
+   "restricted": false
+  },
+  {
+   "id": "cs_index",
+   "name": "计算机学院·首页本科教育",
+   "url": "https://www.cs.sdu.edu.cn/",
+   "parser": "cs_title_dates",
+   "priority": "A",
+   "restricted": false
+  },
+  {
+   "id": "cs_bkjy",
+   "name": "计算机学院·本科教育列表",
+   "url": "https://www.cs.sdu.edu.cn/bkjy.htm",
+   "parser": "vsb_li_date_title",
+   "priority": "A",
+   "restricted": false
+  },
+  {
+   "id": "cs_xsgz_gsl",
+   "name": "计算机学院学工网·公示栏",
+   "url": "https://jsjxsgz.qd.sdu.edu.cn/gsl.htm",
+   "parser": "vsb_li_title_date",
+   "priority": "A",
+   "restricted": false
+  },
+  {
+   "id": "cs_xsgz_xyhd",
+   "name": "计算机学院学工网·学院活动",
+   "url": "https://jsjxsgz.qd.sdu.edu.cn/xyhd.htm",
+   "parser": "vsb_li_title_date",
+   "priority": "B",
+   "restricted": false
+  },
+  {
+   "id": "cs_xsgz_zytz",
+   "name": "计算机学院学工网·重要通知",
+   "url": "https://jsjxsgz.qd.sdu.edu.cn/zytz.htm",
+   "parser": "vsb_li_title_date",
+   "priority": "A",
+   "restricted": false,
+   "note": "实测偏旧（最新 2024-10），保留观察",
+   "allow_empty": true
+  },
+  {
+   "id": "qdxq_tzgg",
+   "name": "青岛校区·通知公告",
+   "url": "https://www.qdxq.sdu.edu.cn/xwzx1/tzyg/tzgg.htm",
+   "parser": "qdxq",
+   "priority": "A",
+   "restricted": false
+  },
+  {
+   "id": "online_home",
+   "name": "学生在线·首页通知公示",
+   "url": "https://online.sdu.edu.cn/",
+   "parser": "online_home",
+   "priority": "A",
+   "restricted": true,
+   "note": "2026-10-12 实测：GitHub 服务器抓它被弹 ipauth → 校内权限源，交本机补抓"
+  },
+  {
+   "id": "job_tzgg",
+   "name": "就业中心·通知公告",
+   "url": "https://www.job.sdu.edu.cn/xwgg/tzgg1.htm",
+   "parser": "date_then_title",
+   "priority": "B",
+   "restricted": false
+  },
+  {
+   "id": "library_notice",
+   "name": "图书馆·通知公告",
+   "url": "https://library.sdu.edu.cn/article/index.html",
+   "parser": "lib_article",
+   "priority": "C",
+   "restricted": false
+  },
+  {
+   "id": "view_tzgg",
+   "name": "新闻网·通知公告",
+   "url": "https://www.view.sdu.edu.cn/tzgg.htm",
+   "parser": "news_h3_em",
+   "priority": "C",
+   "restricted": false,
+   "note": "实测停更（最新 2025-01），保留观察是否复活",
+   "allow_empty": true
+  },
+  {
+   "id": "view_news",
+   "name": "新闻网·山大要闻",
+   "url": "https://www.view.sdu.edu.cn/",
+   "parser": "news_p_span",
+   "priority": "C",
+   "restricted": false
+  },
+  {
+   "id": "ygb_home",
+   "name": "研究生之家·首页",
+   "url": "https://www.ygb.sdu.edu.cn/",
+   "parser": "ygb",
+   "priority": "C",
+   "restricted": false
+  },
+  {
+   "id": "youth_notice",
+   "name": "青春山大·重要通知",
+   "url": "https://www.youth.sdu.edu.cn/list.jsp?urltype=tree.TreeTempUrl&wbtreeid=1004",
+   "parser": "youth_list",
+   "priority": "B",
+   "restricted": true
+  },
+  {
+   "id": "onlineqd_notice",
+   "name": "青岛校区学生工作网·学团通知",
+   "url": "http://www.onlineqd.sdu.edu.cn/",
+   "parser": "onlineqd_home",
+   "priority": "A",
+   "restricted": true
+  }
+ ],
+ "rejected": [
+  {
+   "url": "https://www.cs.sdu.edu.cn/xygg.htm",
+   "reason": "学院公告已停更（最新 2025-01-02），活跃栏是 bkjy.htm"
+  },
+  {
+   "url": "https://www.cs.sdu.edu.cn/tzgg.htm",
+   "reason": "404，VSB 栏目路径不可猜"
+  },
+  {
+   "url": "https://library.sdu.edu.cn/tzgg.htm",
+   "reason": "404"
+  },
+  {
+   "urls": [
+    "https://www.bkjx.sdu.edu.cn/index/gsgg.htm",
+    "https://www.bkjx.sdu.edu.cn/index/jwgl.htm"
+   ],
+   "reason": "404"
+  }
+ ],
+ "wechat_keywords": {
+  "_capability": "公众号无法账号级监控（搜狗无该号账号页，type=1 返回『暂无相关官方认证订阅号』）；只能按关键词搜文章 + 按作者名过滤，覆盖不全，且高频搜会触发验证码。",
+  "_verified_accounts": [
+   "SDUQD学生会",
+   "SDUQD团学",
+   "山东大学学生会",
+   "山东大学学生资助中心",
+   "山东大学小树林支教调研团",
+   "SDU环境"
+  ],
+  "_queries": [
+   "SDUQD学生会",
+   "志愿者招募 山东大学",
+   "青岛校区 志愿 招募"
+  ],
+  "_article_read": "单篇文章可读：mp.weixin.qq.com/s/xxx 直接抓正文（实测 2 篇成功）；搜狗结果需跟随 /link 跳转并从页面脚本 url += '...' 拼出带签名的真实链接（签名会过期）。"
+ }
+}

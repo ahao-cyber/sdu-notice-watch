@@ -1,0 +1,15 @@
+# 不进仓库的本地文件
+mail.local.json
+.env
+set-mail-key.cmd
+state-local.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 杂项
+*.log
+*.tmp

@@ -1,0 +1,51 @@
+name: 山大通知日报
+
+on:
+  schedule:
+    # UTC 23:30 = 北京时间 07:30（主班车）
+    - cron: "30 23 * * *"
+    # 正午前再加一班会：GitHub 的定时触发器会延迟甚至整天漏掉（新建仓库尤其常见）。
+    # 脚本带 --skip-if-delivered，两班只要成一班就只发一封。
+    - cron: "35 0 * * *"     # 北京 08:35
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: 抓取并发送日报
+        env:
+          # 这四项不是密钥，直接写在这里；只有授权码走 Secrets（只需配一个 SMTP_PASS）
+          SMTP_HOST: smtp.qq.com
+          SMTP_PORT: "465"
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
+          # GITHUB_TOKEN 不会自动出现在环境里，必须显式传，否则脚本发不出通知
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python watch.py --send --issue --skip-if-delivered
+
+      - name: 提交状态文件
+        if: always()
+        run: |
+          git config user.name "sdu-watch"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "无变化"
+          else
+            git commit -m "state: $(TZ=Asia/Shanghai date +%F)"
+            git push
+          fi

@@ -1,0 +1,8 @@
+{
+  "host": "smtp.qq.com",
+  "port": 465,
+  "user": "你的QQ号@qq.com",
+  "pass": "QQ邮箱设置里生成的SMTP授权码（16位，不是QQ登录密码）",
+  "to": "收件地址，一般与 user 相同",
+  "serverchan_key": "（可选）Server酱Turbo的SendKey，如 SCT123456xxxxxx；填了就会同时推到微信"
+}
