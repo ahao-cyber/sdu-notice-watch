@@ -38,7 +38,10 @@ jobs:
           SERVERCHAN_KEY: ${{ secrets.SERVERCHAN_KEY }}
           # GITHUB_TOKEN 不会自动出现在环境里，必须显式传，否则脚本发不出通知
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python watch.py --send --issue --skip-if-delivered
+        # 只走邮件一条通道：issue 的内容与邮件完全重复，每天再建一条 issue
+        # 只会让他收到两封一样的邮件。去掉 --issue 即关闭该通道；
+        # 漏发兜底仍由本机 SDU-Cloud-Audit（每天 09:40 体检 + 补发）负责。
+        run: python watch.py --send --skip-if-delivered
 
       - name: 提交状态文件
         if: always()
