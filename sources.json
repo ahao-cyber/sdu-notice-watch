@@ -17,6 +17,8 @@
    "补考",
    "缓考",
    "考试安排",
+   "体测",
+   "体质健康",
    "四六级",
    "全国大学英语",
    "放假",
@@ -127,6 +129,15 @@
    "restricted": false,
    "note": "实测偏旧（最新 2024-10），保留观察",
    "allow_empty": true
+  },
+  {
+   "id": "tyb_tzgg",
+   "name": "体育学院·通知公告",
+   "url": "https://tyb.qd.sdu.edu.cn/xyty/tzgg.htm",
+   "parser": "tyb",
+   "priority": "A",
+   "restricted": false,
+   "note": "体测、校园赛事、培训班通知的唯一发布地；2026-10-18 的体测通知此前因缺此源漏报"
   },
   {
    "id": "qdxq_tzgg",

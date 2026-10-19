@@ -1,0 +1,39 @@
+name: probe-tyb
+
+on:
+  push:
+    paths:
+      - '.github/workflows/probe-tyb.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: fetch tyb list
+        run: |
+          set +e
+          code=$(curl -sS -m 30 -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0' -o /tmp/t.htm -w '%{http_code}' https://tyb.qd.sdu.edu.cn/xyty/tzgg.htm)
+          rc=$?
+          {
+            echo "time=$(date -u +%FT%TZ)"
+            echo "curl_rc=$rc"
+            echo "http=$code"
+            echo "bytes=$(wc -c < /tmp/t.htm)"
+            echo "tiyu_hits=$(grep -c '体质健康' /tmp/t.htm)"
+            echo "ipauth_hits=$(grep -c 'ipauth\|没有访问当前栏目' /tmp/t.htm)"
+          } > probe-result.txt
+          cat probe-result.txt
+
+      - name: commit result
+        run: |
+          git config user.name probe
+          git config user.email actions@users.noreply.github.com
+          git add probe-result.txt
+          git commit -m "probe result" || echo "no change"
+          git push

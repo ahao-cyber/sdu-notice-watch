@@ -204,6 +204,25 @@ def p_vsb_li_title_date(h, base, y):
     return out
 
 
+def p_tyb(h, base, y):
+    """体育学院（青岛）列表：<li class="news2 ..."><span class="news_title"><a title href>…
+    </a></span><span class="news_meta">2026-10-18</span></li>"""
+    out = []
+    for m in re.finditer(r'<li[^>]*class="[^"]*news2[^"]*"[^>]*>(.*?)</li>', h, re.S):
+        blk = m.group(1)
+        a = re.search(r'<a\b[^>]*>', blk)
+        d = re.search(r'<span class="news_meta">\s*(\d{4}-\d{2}-\d{2})\s*</span>', blk)
+        if not a or not d:
+            continue
+        tag = a.group(0)
+        href = re.search(r'href="([^"]+)"', tag)
+        title = re.search(r'title="([^"]{6,})"', tag)
+        if not href or not title:
+            continue
+        out.append((d.group(1), clean(title.group(1)), urljoin(base, href.group(1)), ""))
+    return out
+
+
 def p_vsb_li_date_title(h, base, y):
     """VSB 列表：<li><span class="fr">2026-09-29</span><a href title>（日期在标题前）"""
     out = []
@@ -325,6 +344,7 @@ PARSERS = {
     "bkjx_list": p_bkjx_list,
     "cs_title_dates": p_cs_title_dates,
     "vsb_li_title_date": p_vsb_li_title_date,
+    "tyb": p_tyb,
     "vsb_li_date_title": p_vsb_li_date_title,
     "news_h3_em": p_news_h3_em,
     "qdxq": p_qdxq,
