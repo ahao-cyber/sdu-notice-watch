@@ -159,6 +159,34 @@ def blocked_reason(html_text: str, final_url: str) -> str | None:
     return None
 
 
+# ---------------------------------------------------------------- 校区适用性
+# 2026-11-12 用户要求：只在济南各校区办、青岛这边不办的活动（如"畅益山大"提案大赛）别推。
+# 做法：抓详情页正文，出现济南各校区限定词且通篇不提青岛/威海 → 判为济南专属，不进日报。
+# A 级（学籍/考试/评奖等）不参与判断，宁可多推也不误杀。
+
+JINAN_ONLY_MARKS = ("济南各校区", "济南校本部", "济南校区各学院", "济南各学院", "济南校区")
+CROSS_CAMPUS_MARKS = ("青岛", "威海", "一校三地")
+
+
+def strip_tags(h: str) -> str:
+    t = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", h, flags=re.S | re.I)
+    t = re.sub(r"<[^>]+>", "", t)
+    return re.sub(r"[\s\u3000]+", "", t)
+
+
+def jinan_only(url: str, fetcher) -> bool | None:
+    """True=济南各校区专属；False=多校区或看不出限定；None=抓不到（调用方不缓存）。"""
+    html_text, final_url, err = fetcher.get(url)
+    if not html_text or blocked_reason(html_text, final_url):
+        return None
+    txt = strip_tags(html_text)
+    if len(txt) < 200:                       # 正文没加载出来，别下结论
+        return False
+    if any(m in txt for m in CROSS_CAMPUS_MARKS):
+        return False
+    return any(m in txt for m in JINAN_ONLY_MARKS)
+
+
 # ---------------------------------------------------------------- 各源解析器
 # 统一返回 [(YYYY-MM-DD, 标题, 链接), ...]
 
@@ -503,7 +531,43 @@ def run(args) -> int:
             other["also"] = list(dict.fromkeys(other.get("also", []) + [it["source"]]))
             continue
         merged[key] = it
-    fresh = sorted(merged.values(), key=lambda x: (x["tier"], x["date"]), reverse=False)
+    fresh = list(merged.values())
+
+    # —— 校区适用性过滤（2026-11-12 加）——
+    # ① 标题黑名单：明确只在济南办的品牌活动（如"畅益山大"提案大赛），直接跳过。
+    mute_kw = [k for k in settings.get("mute_keywords", []) if k]
+    if mute_kw:
+        kept = []
+        for x in fresh:
+            if any(k in x["title"] for k in mute_kw):
+                print(f"  － 黑名单跳过（济南专属）：{x['title'][:40]}")
+            else:
+                kept.append(x)
+        fresh = kept
+    # ② 正文判断：活动类（B/C）才查详情页，正文写"济南各校区"又不提青岛/威海的，不进日报。
+    if settings.get("jinan_filter", True):
+        jcache = st.setdefault("jinan_only", {})
+        budget = int(settings.get("jinan_filter_max", 40))
+        kept, checked = [], 0
+        for x in fresh:
+            if x["tier"] == "A":                      # 学籍/考试/评奖不参与判断
+                kept.append(x)
+                continue
+            k = item_key(x["title"], x["url"])
+            verdict = jcache.get(k)
+            if verdict is None and checked < budget:
+                v = jinan_only(x["url"], fetcher)
+                checked += 1
+                if v is not None:
+                    jcache[k] = 1 if v else 0
+                    verdict = jcache[k]
+            if verdict == 1:
+                print(f"  － 济南校区专属跳过：{x['title'][:40]}")
+                continue
+            kept.append(x)
+        fresh = kept
+
+    fresh = sorted(fresh, key=lambda x: (x["tier"], x["date"]), reverse=False)
     fresh.sort(key=lambda x: x["date"], reverse=True)
     fresh.sort(key=lambda x: {"A": 0, "B": 1, "C": 2}[x["tier"]])
 
