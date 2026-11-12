@@ -13,7 +13,17 @@
     ],
     "_jinan_note": "正文判断：活动类通知正文写「济南各校区/济南校本部」且不提青岛威海的，判为济南专属跳过；A级通知不参与",
     "jinan_filter": true,
-    "jinan_filter_max": 40
+    "jinan_filter_max": 40,
+    "_skip_note": "标题含这些词的不做济南判断（钱、资格、名单类，宁可多推）",
+    "jinan_filter_skip": [
+      "发放",
+      "资助",
+      "奖助",
+      "奖励",
+      "奖学金",
+      "助学金",
+      "公示"
+    ]
   },
   "tag_rules": {
     "A": [

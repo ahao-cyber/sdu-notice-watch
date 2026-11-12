@@ -548,9 +548,11 @@ def run(args) -> int:
     if settings.get("jinan_filter", True):
         jcache = st.setdefault("jinan_only", {})
         budget = int(settings.get("jinan_filter_max", 40))
+        keep_kw = [k for k in settings.get("jinan_filter_skip", []) if k]
         kept, checked = [], 0
         for x in fresh:
-            if x["tier"] == "A":                      # 学籍/考试/评奖不参与判断
+            # 学籍/考试/评奖不动；奖助发放、名单公示这类"钱和资格"的事也不判，宁可多推
+            if x["tier"] == "A" or any(k in x["title"] for k in keep_kw):
                 kept.append(x)
                 continue
             k = item_key(x["title"], x["url"])
